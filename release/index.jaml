@@ -1,0 +1,19 @@
+fungusIndex = function (product) {
+  html(
+    head(
+      link({ rel: 'stylesheet', type: 'text/css', href: 'style.css' })
+    ),
+
+    body(
+      script({ type: 'text/javascript', src: 'fungus.js' }),
+      script({ type: 'text/javascript', src: 'jquery-1.7.1.min.js' }),
+      script({ type: 'text/javascript', src: 'Three.js' }),
+      script({ type: 'text/javascript' },
+        "$('document').ready(function() {
+           c = new Fungus();
+           c.start();
+         });")
+    )
+  );
+}
+
