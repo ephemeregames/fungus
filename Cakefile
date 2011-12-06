@@ -1,12 +1,18 @@
 {print} = require 'sys'
 {exec}  = require 'child_process'
 fs      = require 'fs'
+path    = require 'path'
 
 # Utility: copy file
 copy = (from, to) ->
   fs.readFile from, (err, data) ->
     throw err if err
     fs.writeFile to, data
+
+# Utility: create a directory if it doesn't exists
+createDirectory = (p) ->
+  if (!path.existsSync(p))
+    fs.mkdirSync(p, '711')
 
 
 # Options
@@ -31,22 +37,28 @@ task 'new', 'Create a new game', (options) ->
   for path in paths
     fs.mkdirSync(path, '711')
 
-  #copy('scaffolding/Cakefile', options.path)
-  #copy('scaffolding/resources/index.html', options.path + '/resources/index.html')
-  #copy('scaffolding/src/game.coffee', options.path + '/src/game.coffee')
+  copy('scaffolding/Cakefile', options.path + '/Cakefile')
+  copy('scaffolding/resources/index.html', options.path + '/resources/index.html')
+  copy('scaffolding/src/game.coffee', options.path + '/src/game.coffee')
 
 
 # TASK: SIMPLE BUILD
 
 task 'build', 'Build project', ->
-  exec 'coffee -c -o js src', (err) ->
+  createDirectory('bin')
+  createDirectory('bin/js')
+
+  exec 'coffee -c -o bin/js src', (err) ->
     throw err if err   
 
 
 # TASK: WATCH DIRECTORY
 
 task 'watch', 'Watch project for changes', ->
-  exec 'coffee -w -c -o js src', (err) ->
+  createDirectory('bin')
+  createDirectory('bin/js')
+
+  exec 'coffee -w -c -o bin/js src', (err) ->
     throw err if err
 
 
@@ -65,17 +77,18 @@ task 'debug', 'Build project in one file for debug', ->
     'game/fungus',
   ]
 
-  output = 'release/fungus.coffee'
+  output = 'bin/debug/fungus.coffee'
   jquery = 'jquery-1.7.1.min.js'
   three  = 'Three.js'
 
   datas = new Array
   remaining = files.length
 
-  # todo create dir
+  # create dirs
+  createDirectory('bin')
+  createDirectory('bin/debug')
 
   # merge the files
-
   for file, index in files then do (file, index) ->
     fs.readFile "src/#{file}.coffee", (err, data) ->
       throw err if err
@@ -91,7 +104,5 @@ task 'debug', 'Build project in one file for debug', ->
         fs.unlink output
 
   # copy stuff
-  copy("lib/#{jquery}", "release/#{jquery}")
-  copy("lib/#{three}", "release/#{three}")
-  copy("src/html/index.html", "release/index.html")
-  #copy("src/html/style.css", "release/style.css")
+  copy("lib/#{jquery}", "bin/debug/#{jquery}")
+  copy("lib/#{three}", "bin/debug/#{three}")
