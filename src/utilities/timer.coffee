@@ -1,4 +1,4 @@
-class Timer
+class @Timer
   constructor: (target) ->
     @target = target
     @average = 0

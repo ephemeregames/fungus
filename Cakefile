@@ -3,11 +3,25 @@
 fs      = require 'fs'
 path    = require 'path'
 
-# Utility: copy file
+jquery  = 'jquery-1.7.1.min.js'
+three   = 'Three.js'
+
+
+# Utility: copy one file
 copy = (from, to) ->
   fs.readFile from, (err, data) ->
     throw err if err
     fs.writeFile to, data
+
+
+# Utility: copy multiple files
+copyAll = (from, to) ->
+  fs.readdir from, (err, files) ->
+    throw err if err
+
+    for f in files
+      copy("#{from}/#{f}", "#{to}/#{f}")
+
 
 # Utility: create a directory if it doesn't exists
 createDirectory = (p) ->
@@ -18,11 +32,12 @@ createDirectory = (p) ->
 # Options
 option '-p', '--path [DIR]', 'path of the game'
 
+
 # Task: create a new game
 task 'new', 'Create a new game', (options) ->
 
   if (!options.path?)
-    throw 'you must provide a path where the game will be created'
+    throw 'syntax: cake -p path/to/your/game new'
 
   paths = [
     options.path,
@@ -41,9 +56,10 @@ task 'new', 'Create a new game', (options) ->
   copy('scaffolding/resources/index.html', options.path + '/resources/index.html')
   copy('scaffolding/src/game.coffee', options.path + '/src/game.coffee')
 
+  copyAll('bin/debug', options.path + '/lib')
 
-# TASK: SIMPLE BUILD
 
+# Task: build
 task 'build', 'Build project', ->
   createDirectory('bin')
   createDirectory('bin/js')
@@ -52,8 +68,7 @@ task 'build', 'Build project', ->
     throw err if err   
 
 
-# TASK: WATCH DIRECTORY
-
+# Task: watch
 task 'watch', 'Watch project for changes', ->
   createDirectory('bin')
   createDirectory('bin/js')
@@ -62,7 +77,7 @@ task 'watch', 'Watch project for changes', ->
     throw err if err
 
 
-# TASK: JOIN FILES. TO DO: better than that.
+# Task: debug
 task 'debug', 'Build project in one file for debug', ->
   # omit src/ and .coffee to make the below lines a little shorter
   files  = [
@@ -74,12 +89,11 @@ task 'debug', 'Build project in one file for debug', ->
     'visual/canvas3D',
     'visual/scene',
     'visual/scenes',
-    'game/fungus',
+    'game/game',
+    'interface'
   ]
 
   output = 'bin/debug/fungus.coffee'
-  jquery = 'jquery-1.7.1.min.js'
-  three  = 'Three.js'
 
   datas = new Array
   remaining = files.length

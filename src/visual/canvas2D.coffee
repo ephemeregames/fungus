@@ -11,31 +11,18 @@ class Canvas2D
     @context = canvas.getContext '2d'
     @width = @context.canvas.width
     @height = @context.canvas.height
-    @toDraw = new Array
-    
-    $(window).bind 'resize', =>
-      this.resize()
-
-    this.resize()
-
-
-  addToDraw: (drawable) =>
-    @toDraw.push drawable
 
       
-  draw: =>
+  draw: (items) =>
     # clear screen
     @context.clearRect 0, 0, @width, @height
     # @context.fillStyle = '#000000'
     # @context.fillRect 0, 0, @width, @height
     
-    item.draw(@context) for item in @toDraw
-    
-    @toDraw.clear()
+    item.draw(@context) for item in items
 
 
   resize: =>
     @width = @context.canvas.width = window.innerWidth
     @height = @context.canvas.height = window.innerHeight
-    this.draw()
 

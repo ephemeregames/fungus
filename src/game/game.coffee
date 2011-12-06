@@ -1,4 +1,4 @@
-class Fungus
+class Game
   constructor: ->
     @scenes = new Scenes()
 
@@ -8,10 +8,6 @@ class Fungus
 
     @_timerSimulator = new Timer(60)
     @_timerSimulator.callback = this.draw
-
-
-  #initialize: =>
-  #  @scenes.initialize()
 
 
   update: =>

@@ -11,15 +11,6 @@ class Canvas3D
 
     #tmp
     document.body.appendChild(@renderer.domElement)
-    
-    @container.bind 'resize', =>
-      this.resize()
-
-    this.resize()
-    
-
-  #initialize: =>
-  #  this.resize()
 
 
   draw: (scene, camera) =>
@@ -29,5 +20,5 @@ class Canvas3D
   resize: =>
     @size.x = @container.width()
     @size.y = @container.height()
-
     @renderer.setSize(@size.x, @size.y)
+

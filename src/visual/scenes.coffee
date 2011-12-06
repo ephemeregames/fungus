@@ -9,9 +9,7 @@ class Scenes
     $(window).bind 'resize', =>
       this.resize()
 
-
-  #initialize: =>
-  #  @canvas.initialize()
+    this.resize()
 
 
   createScene: (name) =>
@@ -28,7 +26,9 @@ class Scenes
 
   draw: =>
     #to do: stateful 2d canvas OR better way to add text to 3d canvas
-    @canvas2d.draw()
+    @canvas2d.draw(@active.toDrawIn2D)
+    @active.toDrawIn2D.clear()
+
     @canvas.draw(@active, @active.camera)
 
 
@@ -36,9 +36,12 @@ class Scenes
     width = window.innerWidth
     height = window.innerHeight
 
-    for scene in @_data
+    for name, scene of @_data
       scene.setSize({
         x: window.innerWidth,
-        y: innerHeight
+        y: window.innerHeight
       })
+
+    @canvas.resize()
+    @canvas2d.resize()
 
