@@ -84,12 +84,14 @@ task 'debug', 'Build project in one file for debug', ->
     'utilities/extends',
     'utilities/timer',
     'utilities/random',
+    'utilities/fatal',
     'visual/text',
     'visual/canvas2D',
     'visual/canvas3D',
     'visual/scene',
     'visual/scenes',
     'game/game',
+    'game/launcher',
     'interface'
   ]
 

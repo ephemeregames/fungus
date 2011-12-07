@@ -5,7 +5,14 @@ class Canvas3D
       y: @container.height()
     }
 
-    @renderer = new THREE.WebGLRenderer()
+    try
+      @renderer = new THREE.WebGLRenderer()
+    catch error
+      try
+        @renderer = new THREE.CanvasRenderer()
+      catch error
+        throw "PlatformUnsupported"
+
     @renderer.setSize(@size.x, @size.y)
     @renderer.setClearColor('#000000', 1)
 

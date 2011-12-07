@@ -45,7 +45,7 @@ task 'debug', 'Build project in one file for debug', ->
   createDirectory('bin/debug')
 
   # merge the files
-  exec 'coffee -j bin/debug/game.js -c src/*.coffee', (err) ->
+  exec 'coffee -j bin/debug/game.js -c src', (err) ->
     throw err if err
 
   # copy stuff

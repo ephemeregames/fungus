@@ -8,3 +8,10 @@ Array::removeAt = (from, to) ->
 Array::clear = ->
   this.length = 0
 
+# From http://stackoverflow.com/questions/210717/using-jquery-to-center-a-div-on-the-screen
+jQuery.fn.center = ->
+  this.css('position', 'absolute')
+  this.css('top', (($(window).height() - this.outerHeight()) / 2) + $(window).scrollTop() + 'px')
+  this.css('left', (($(window).width() - this.outerWidth()) / 2) + $(window).scrollLeft() + 'px')
+  
+  return this

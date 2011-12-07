@@ -1,15 +1,15 @@
 class Game
   constructor: ->
-    @scenes = new Scenes()
-
     @_timerVisual = new Timer(60)
     @_timerVisual.skipFrames = yes
     @_timerVisual.callback = this.update
 
     @_timerSimulator = new Timer(60)
-    @_timerSimulator.callback = this.draw
+    @_timerSimulator.callback = this.draw	
 
-
+    @scenes = new Scenes()
+	
+	
   update: =>
 
 
