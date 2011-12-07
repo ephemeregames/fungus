@@ -1,0 +1,65 @@
+{print} = require 'sys'
+{exec}  = require 'child_process'
+fs      = require 'fs'
+path    = require 'path'
+
+
+# Utility: copy file
+copy = (from, to) ->
+  fs.readFile from, (err, data) ->
+    throw err if err
+    fs.writeFile to, data
+
+
+# Utility: create a directory if it doesn't exists
+createDirectory = (p) ->
+  if (!path.existsSync(p))
+    fs.mkdirSync(p, '711')
+
+
+# Task: build
+task 'build', 'Build project', ->
+  createDirectory('bin')
+  createDirectory('bin/js')
+
+  exec 'coffee -c -o bin/js src', (err) ->
+    throw err if err   
+
+
+# Task: watch
+task 'watch', 'Watch project for changes', ->
+  createDirectory('bin')
+  createDirectory('bin/js')
+
+  exec 'coffee -w -c -o bin/js src', (err) ->
+    throw err if err
+
+
+# Task: debug
+task 'debug', 'Build project in one file for debug', ->
+  jquery = 'jquery-1.7.1.min.js'
+  three  = 'Three.js'
+
+  # create dirs
+  createDirectory('bin')
+  createDirectory('bin/debug')
+
+  # merge the files
+  exec 'coffee -j bin/debug/game.js -c src/*.coffee', (err) ->
+    throw err if err
+
+  # copy stuff
+  fs.readdir 'lib', (err, files) ->
+    throw err if err
+
+    for f in files
+      copy("lib/#{f}", "bin/debug/#{f}")
+
+
+  # todo: merge everything from lib
+  # todo: copy everything from resources
+  copy('resources/index.html', 'bin/debug/index.html')
+  copy('resources/embedded.html', 'bin/debug/embedded.html')
+
+
+
