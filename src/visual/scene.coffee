@@ -1,7 +1,6 @@
 class Scene extends THREE.Scene
-
-  initialize: (size) =>
-    @camera = new THREE.PerspectiveCamera(75, size.x / size.y, 1, 10000)
+  initialize: =>
+    @camera = new THREE.PerspectiveCamera(75, $(window).width() / $(window).height(), 1, 10000)
     @camera.position.z = 500
 
     this.add(@camera)
@@ -13,6 +12,7 @@ class Scene extends THREE.Scene
     @toDrawIn2D.push drawable
 
 
-  setSize: (size) =>
-    @camera.aspect = size.x / size.y
+  resize: =>
+    @camera.aspect = $(window).width() / $(window).height()
     @camera.updateProjectionMatrix()
+

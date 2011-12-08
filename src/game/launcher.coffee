@@ -2,13 +2,15 @@ class Launcher
   constructor: ->
     @_fatal = new Fatal()
     
-    try
-      @game = new window.Game()
-      @game.start()
+    #try
+    @game = new window.Game()
+    @game.start()
     
-    catch error
-      if (error == "PlatformUnsupported")
-        @_fatal.setPlatformUnsupported()
+    #catch error
+    #  if (error == "PlatformUnsupported")
+    #    @_fatal.setPlatformUnsupported()
+    #  else
+    #    throw error
         
-      if (@game?)
-        @game.stop()
+    #  if (@game?)
+    #    @game.stop()

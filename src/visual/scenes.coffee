@@ -1,6 +1,12 @@
 class Scenes
   constructor: ->
-    @canvas = new Canvas3D($(window))
+    @_bufferSize = {
+      x: $(window).width(),
+      y: $(window).height()
+    }
+    @_fixedDrawingBuffer = false
+
+    @canvas = new Canvas3D(@_bufferSize)
     @canvas2d = new Canvas2D($(window))
 
     @_data = {}
@@ -9,12 +15,10 @@ class Scenes
     $(window).bind 'resize', =>
       this.resize()
 
-    this.resize()
-
 
   createScene: (name) =>
     scene = new Scene()
-    scene.initialize(@canvas.size)
+    scene.initialize()
     @_data[name] = scene
 
     return scene
@@ -22,6 +26,16 @@ class Scenes
 
   setActive: (name) =>
     @active = @_data[name]
+
+
+  setUseFixedDrawingBuffer: (use) =>
+    @_fixedDrawingBuffer = use
+    this.resize()
+
+
+  setBufferSize: (size) =>
+    @_bufferSize = size
+    this.resize()
 
 
   draw: =>
@@ -33,15 +47,13 @@ class Scenes
 
 
   resize: =>
-    width = window.innerWidth
-    height = window.innerHeight
+    if (!@_fixedDrawingBuffer)
+      @_bufferSize.x = $(window).width()
+      @_bufferSize.y = $(window).height()
 
     for name, scene of @_data
-      scene.setSize({
-        x: window.innerWidth,
-        y: window.innerHeight
-      })
+      scene.resize()
 
-    @canvas.resize()
+    @canvas.resize(@_bufferSize)
     @canvas2d.resize()
 

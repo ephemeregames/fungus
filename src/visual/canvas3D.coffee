@@ -1,10 +1,5 @@
 class Canvas3D
-  constructor: (@container) ->
-    @size = {
-      x: @container.width(),
-      y: @container.height()
-    }
-
+  constructor: (@size) ->
     try
       @renderer = new THREE.WebGLRenderer()
     catch error
@@ -16,16 +11,24 @@ class Canvas3D
     @renderer.setSize(@size.x, @size.y)
     @renderer.setClearColor('#000000', 1)
 
-    #tmp
-    document.body.appendChild(@renderer.domElement)
+    $('body').append(@renderer.domElement)
+    this.fullscreen()
 
 
   draw: (scene, camera) =>
     @renderer.render(scene, camera)
 
 
-  resize: =>
-    @size.x = @container.width()
-    @size.y = @container.height()
+  resize: (size) =>
+    @size = size
     @renderer.setSize(@size.x, @size.y)
+    this.fullscreen()
+
+
+  fullscreen: =>
+    e = $(@renderer.domElement)
+    w = $(window)
+    
+    e.css('width', w.width())
+    e.css('height', w.height())
 
