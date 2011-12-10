@@ -38,8 +38,12 @@ class Package
     if (name.endsWith('.jpg') or name.endsWith('.png'))
       img = new Image()
       img.src = path
+      
+      # here because there is a race condition when set
+      # inside the 'onload' callback
+      @_dataDownloaded[name] = img
+
       img.onload = =>
-        @_dataDownloaded[name] = img
         @_dataDownloadedCount++
 
         if (this.isDownloadCompleted() and @callback?)

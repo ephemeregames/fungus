@@ -7,7 +7,13 @@ class @Game extends Fungus.Game
 
     @assets = new Fungus.Assets({
       'folder': 'assets',
-      'packages': [{ 'name': 'core', 'data': ['troll.jpg'] }],
+      'packages': [{ 'name': 'core', 'data': [
+        'troll.jpg',
+        'troll2.jpg',
+        'troll3.jpg',
+        'troll4.jpg',
+        'troll5.jpg'
+      ] }],
       'downloadAll': true
     })
 
@@ -29,7 +35,7 @@ class @Game extends Fungus.Game
     @scene.addToDrawIn2D(text2)
 
     if (@assets.isAllPackagesDownloaded())
-      img = new Fungus.Image(@assets.getAsset('troll.jpg'))
+      img = new Fungus.Image(@assets.getAsset('troll5.jpg'))
       img.priority = 1
       @scene.addToDrawIn2D(img)
         
