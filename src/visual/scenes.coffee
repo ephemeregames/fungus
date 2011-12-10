@@ -7,7 +7,7 @@ class Scenes
     @_fixedDrawingBuffer = false
 
     @canvas = new Canvas3D(@_bufferSize)
-    @canvas2d = new Canvas2D($(window))
+    @canvas2d = new Canvas2D(@_bufferSize)
 
     @_data = {}
     @active = null
@@ -55,5 +55,5 @@ class Scenes
       scene.resize()
 
     @canvas.resize(@_bufferSize)
-    @canvas2d.resize()
+    @canvas2d.resize(@_bufferSize)
 

@@ -1,12 +1,13 @@
 class Text
   constructor: (@data = '') ->
     @color = '#FF0000'
-    @position = [0, 0]
+    @position = { 'x': 0, 'y': 0 }
     @size = 20
     @font = 'Lucida Sans Unicode'
+    @priority = 0
 
   draw: (canvas) =>
     canvas.font = "#{@size}pt #{@font}"
     canvas.fillStyle = @color
-    canvas.fillText @data, @position[0], @position[1]
+    canvas.fillText @data, @position.x, @position.y
 

@@ -8,7 +8,8 @@ class Game
     @_timerSimulator.callback = this.draw	
 
     @scenes = new Scenes()
-	
+    @random = new Random()
+
 	
   update: =>
 
@@ -30,7 +31,4 @@ class Game
   setTargetFPS: (fps) =>
     @_timerVisual.target = fps
     @_timerSimulator.target = fps
-
-
-  @random: new Random()
 

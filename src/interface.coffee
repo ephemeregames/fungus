@@ -2,6 +2,8 @@
   'Launcher': Launcher,
   'Game': Game,
   'Timer': Timer,
-  'Text': Text
+  'Text': Text,
+  'Image': IImage,
+  'Assets': Assets
 }
 

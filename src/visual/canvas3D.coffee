@@ -29,6 +29,7 @@ class Canvas3D
     e = $(@renderer.domElement)
     w = $(window)
     
+    # there is a difference between element.width and element.css.width...
     e.css('width', w.width())
     e.css('height', w.height())
 
