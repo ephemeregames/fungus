@@ -4,6 +4,7 @@
   'Timer': Timer,
   'Text': Text,
   'Image': IImage,
-  'Assets': Assets
+  'Assets': Assets,
+  'UserData': UserData
 }
 
