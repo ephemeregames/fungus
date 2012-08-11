@@ -10,24 +10,18 @@
       }
     </style>
   </head>
+  <link type="text/css" href="jquery-ui-1.8.16.custom.css" rel="Stylesheet" />
   <body>
     <script type="text/javascript" src="jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="jquery-ui-1.8.16.custom.min.js"></script>
+    <script type="text/javascript" src="prototype-1.7.js"></script>
+    <script type="text/javascript" src="box2djs.js"></script>
+    <script type="text/javascript" src="coffeekup.js"></script>
     <script type="text/javascript" src="Three.js"></script>
     <script type="text/javascript" src="fungus.js"></script>
     <script type="text/javascript" src="game.js"></script>
     <script type="text/javascript">
-      //$(document).ready(function() {
-      //  jQuery.getScript('Three.js', function() {
-      //    jQuery.getScript('fungus.js', function() {
-      //      jQuery.getScript('game.js', function() {
-      //        c = new Game();
-      //        c.start();
-      //      })        
-      //    })        
-      //  })
-      //});
-
-      $(window).load(function() {
+      jQuery(window).load(function() {
         c = new Fungus.Launcher();
       });
     </script>

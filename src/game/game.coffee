@@ -9,9 +9,11 @@ class Game
 
     @scenes = new Scenes()
     @random = new Random()
+    @inputs = new Inputs(@scenes.canvas2d.canvas)
 
 	
   update: =>
+    @inputs.update()
 
 
   draw: =>

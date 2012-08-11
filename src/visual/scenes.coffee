@@ -1,8 +1,8 @@
 class Scenes
   constructor: ->
     @_bufferSize = {
-      x: $(window).width(),
-      y: $(window).height()
+      x: jQuery(window).width(),
+      y: jQuery(window).height()
     }
     @_fixedDrawingBuffer = false
 
@@ -12,7 +12,7 @@ class Scenes
     @_data = {}
     @active = null
 
-    $(window).bind 'resize', =>
+    jQuery(window).bind 'resize', =>
       this.resize()
 
 
@@ -48,8 +48,8 @@ class Scenes
 
   resize: =>
     if (!@_fixedDrawingBuffer)
-      @_bufferSize.x = $(window).width()
-      @_bufferSize.y = $(window).height()
+      @_bufferSize.x = jQuery(window).width()
+      @_bufferSize.y = jQuery(window).height()
 
     for name, scene of @_data
       scene.resize()

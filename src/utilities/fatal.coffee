@@ -1,14 +1,14 @@
 class @Fatal
   constructor: () ->
-    $('window').bind 'resize', =>
+    jQuery('window').bind 'resize', =>
       this.resize()
 
   setPlatformUnsupported: =>
-    $('body').append('<div id="fungusError">Platform unsupported.</div>')
-    $('fungusError').center()
+    jQuery('body').append('<div id="fungusError">Platform unsupported.</div>')
+    jQuery('fungusError').center()
 
   resize: =>
-    element = $('fungusError')
+    element = jQuery('fungusError')
 
     return if !element?
 

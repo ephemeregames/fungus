@@ -11,7 +11,7 @@ class Canvas3D
     @renderer.setSize(@size.x, @size.y)
     @renderer.setClearColor('#000000', 1)
 
-    $('body').append(@renderer.domElement)
+    jQuery('body').append(@renderer.domElement)
     this.fullscreen()
 
 
@@ -26,8 +26,8 @@ class Canvas3D
 
 
   fullscreen: =>
-    e = $(@renderer.domElement)
-    w = $(window)
+    e = jQuery(@renderer.domElement)
+    w = jQuery(window)
     
     # there is a difference between element.width and element.css.width...
     e.css('width', w.width())

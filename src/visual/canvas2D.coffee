@@ -1,7 +1,7 @@
 class Canvas2D  
   constructor: (@size) ->
 
-    @canvas = $('<canvas />', {
+    @canvas = jQuery('<canvas />', {
       id: 'canvas2d'
     })
 
@@ -13,7 +13,7 @@ class Canvas2D
     @canvas.css('left', '0px')
     @canvas.css('right', '0px')
     
-    $('body').append(@canvas)
+    jQuery('body').append(@canvas)
     
     @context = (@canvas[0]).getContext '2d'
     
@@ -43,7 +43,7 @@ class Canvas2D
 
 
   fullscreen: =>
-    w = $(window)
+    w = jQuery(window)
     
     # there is a difference between element.width and element.css.width...
     @canvas.css('width', w.width())

@@ -13,8 +13,8 @@ Array::clear = ->
 # Translated in CoffeeScript by Jodi Giordano
 jQuery.fn.center = ->
   this.css('position', 'absolute')
-  this.css('top', (($(window).height() - this.outerHeight()) / 2) + $(window).scrollTop() + 'px')
-  this.css('left', (($(window).width() - this.outerWidth()) / 2) + $(window).scrollLeft() + 'px')
+  this.css('top', ((jQuery(window).height() - this.outerHeight()) / 2) + jQuery(window).scrollTop() + 'px')
+  this.css('left', ((jQuery(window).width() - this.outerWidth()) / 2) + jQuery(window).scrollLeft() + 'px')
   
   return this
 

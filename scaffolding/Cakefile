@@ -1,64 +1,202 @@
-{print} = require 'sys'
-{exec}  = require 'child_process'
-fs      = require 'fs'
-path    = require 'path'
+{print}    = require 'sys'
+{spawn}    = require 'child_process'
+fs         = require 'fs'
+execSync   = require 'exec-sync'
 
+#==========================================================
+# Utilities
+#==========================================================
 
-# Utility: copy file
+# Wait for x milliseconds
+wait = (ms) ->
+  setTimeout(->,
+  ms)
+
+# Copy one file
 copy = (from, to) ->
-  fs.readFile from, (err, data) ->
-    throw err if err
-    fs.writeFile to, data
+  fs.writeFileSync(to, fs.readFileSync(from))
 
 
-# Utility: create a directory if it doesn't exists
-createDirectory = (p) ->
-  if (!path.existsSync(p))
-    fs.mkdirSync(p, '711')
+# Copy multiple files
+copyAll = (from, to) ->
+  throw 'DirectoryNotFound' unless fs.existsSync(from)
 
+  files = fs.readdirSync(from)
+
+  for f in files
+    stats = fs.statSync("#{from}/#{f}")
+
+    if stats.isDirectory()
+      createDirectory("#{to}/#{f}")
+      copyAll("#{from}/#{f}", "#{to}/#{f}")
+    else
+      copy("#{from}/#{f}", "#{to}/#{f}")
+
+
+# Remove a directory (recursive)
+removeDirectory = (path) ->
+  return unless fs.existsSync(path)
+
+  # get all the directories and files within path
+  data = fs.readdirSync(path)
+  directories = []
+  files = []
+
+  for d in data
+    sub_path = "#{path}/#{d}"
+
+    if fs.statSync(sub_path).isDirectory()
+      directories.push(sub_path)
+    else
+      files.push(sub_path)
+
+  # for each directory, repeat the process so far
+  for d in directories
+    removeDirectory(d)
+
+  # at this point, we have enumerated each file and directory
+  # and the bottom of the directory hierarchy starts processing
+
+  # remove each file in the directory
+  for f in files
+    fs.unlinkSync(f)
+ 
+  # remove the empty directory
+  fs.rmdirSync(path)
+
+
+# Create a directory if it doesn't exists (recursive)
+createDirectory = (path) -> 
+  sub_paths = path.split('/')
+
+  path_to_create = ""
+
+  for p in sub_paths
+    path_to_create += "#{p}/"
+
+    unless fs.existsSync(path_to_create)
+      fs.mkdirSync(path_to_create, '711')
+
+
+# Reset a directory, which means:
+# - Remove and recreate the directory if presents
+# - Create the directory if not
+resetDirectory = (path) ->
+  removeDirectory(path)
+  createDirectory(path)
+
+
+# Get a list of files paths from a directory (recursive)
+# Usage: getFilesSync('path/to/folder', 'coffee$', '^interface')
+getFilesSync = (from, includes, excludes, results) ->
+  throw 'DirectoryNotFound' unless fs.existsSync(from)
+  
+  results ?= new Array
+  
+  files = fs.readdirSync(from)
+  
+  for name in files
+    path = "#{from}/#{name}"
+    stats = fs.statSync(path)
+    results.push(path) if stats.isFile() and name.match(includes)? and !name.match(excludes)?
+    getFilesSync(path, includes, excludes, results) if stats.isDirectory()
+  
+  return results
+
+
+# Merge multiple files from a directory (recursive)
+# TODO remove 'interface' dependence
+merge = (from, to) ->
+  files = getFilesSync(from, 'coffee$', '^interface')
+
+  datas = new Array()
+  
+  for file in files
+    datas.push(fs.readFileSync(file))
+  
+  fs.writeFileSync(to, datas.join('\n\n'))
+
+
+# Merge one file into another file
+mergeOne = (from, into) ->
+  datas = [fs.readFileSync(into), fs.readFileSync(from)]
+  fs.writeFileSync(into, datas.join('\n\n'))
+
+
+# Compile
+compile = (from, to, name) ->
+  path = "#{to}/#{name}.coffee"
+
+  # build
+  execSync("coffee -c -o #{to} #{path}")
+
+  # delete the merged file
+  fs.unlinkSync(path)
+
+
+# Merge and compile files from a directory (recursive)
+# Usage: mergeAndCompile('path/from', 'path/to', 'myscript')
+mergeAndCompile = (from, to, name) ->
+  path = "#{to}/#{name}.coffee"
+
+  merge(from, path)
+
+  # build & delete the merged file
+  execSync("coffee -c -o #{to} #{path}")
+
+  fs.unlink path
+
+
+#==========================================================
+# Tasks
+#==========================================================
 
 # Task: build
-task 'build', 'Build project', ->
-  createDirectory('bin')
-  createDirectory('bin/js')
+build = ->
+  resetDirectory('bin/js')
 
-  exec 'coffee -c -o bin/js src', (err) ->
-    throw err if err   
+  execSync('coffee -c -o bin/js src')
+
+task 'build', 'Build project', -> build()
 
 
 # Task: watch
 task 'watch', 'Watch project for changes', ->
-  createDirectory('bin')
-  createDirectory('bin/js')
+  resetDirectory('bin/js')
 
-  exec 'coffee -w -c -o bin/js src', (err) ->
-    throw err if err
+  execSync('coffee -w -c -o bin/js src')
 
 
 # Task: debug
-task 'debug', 'Build project in one file for debug', ->
-  jquery = 'jquery-1.7.1.min.js'
-  three  = 'Three.js'
-
-  # create dirs
-  createDirectory('bin')
-  createDirectory('bin/debug')
+debug = ->
+  resetDirectory('bin/debug')
 
   # merge the files
-  exec 'coffee -j bin/debug/game.js -c src/*.coffee', (err) ->
-    throw err if err
+  execSync('coffee -j bin/debug/game.js -c src/*.coffee')
 
   # copy stuff
-  fs.readdir 'lib', (err, files) ->
-    throw err if err
+  # TODO merge everything from lib
+  copyAll('lib', 'bin/debug')
 
-    for f in files
-      copy("lib/#{f}", "bin/debug/#{f}")
-
-
-  # todo: merge everything from lib
-  # todo: copy everything from resources
-  copy('resources/index.html', 'bin/debug/index.html')
+task 'debug', 'Build project in one file for debug', -> debug()
 
 
+# Task: launch game
+task 'start', 'Start the project', (options) ->
+  debug()
+
+  p = spawn 'python', ['-m', 'SimpleHTTPServer'], {
+    cwd: "#{process.cwd()}/bin",
+    env: process.env,
+    customFds: [-1, -1, -1]
+  }
+
+  p.stdout.on 'data', (data) ->
+    print "stdout: #{data}"
+
+  p.stderr.on 'data', (data) ->
+    print "stderr: #{data}"
+
+  p.on 'exit', (code) ->
+    print "exit: #{code}"
 

@@ -1,6 +1,6 @@
 class Scene extends THREE.Scene
   initialize: =>
-    @camera = new THREE.PerspectiveCamera(75, $(window).width() / $(window).height(), 1, 10000)
+    @camera = new THREE.PerspectiveCamera(75, jQuery(window).width() / jQuery(window).height(), 1, 10000)
     @camera.position.z = 500
 
     this.add(@camera)
@@ -13,6 +13,6 @@ class Scene extends THREE.Scene
 
 
   resize: =>
-    @camera.aspect = $(window).width() / $(window).height()
+    @camera.aspect = jQuery(window).width() / jQuery(window).height()
     @camera.updateProjectionMatrix()
 

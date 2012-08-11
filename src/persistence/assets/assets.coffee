@@ -3,12 +3,12 @@ class Assets
     @packages = {}
 
     for p in @descriptor.packages
-      @packages[p] = new Package(p)
+      @packages[p] = new AssetPackage(p)
 
 
   isAllPackagesDownloaded: =>
-    for name, package of @packages
-      return false if !package.isDownloadCompleted
+    for name, aPackage of @packages
+      return false if !aPackage.isDownloadCompleted
 
     return true
 
@@ -17,7 +17,7 @@ class Assets
     if (@descriptor.downloadAll)
       @_allPackagesDownloadedCallback = callback
 
-      for name, package of @packages
+      for name, aPackage of @packages
         this.download(name, this._packageDownloadedCallback)
 
     else if (@packages['core']?)
@@ -30,8 +30,8 @@ class Assets
 
   getAsset: (name) =>
     #todo: cache assets in {}
-    for pname, package of @packages
-      return package.getAsset(name) if package.containsAsset(name)
+    for pname, aPackage of @packages
+      return aPackage.getAsset(name) if aPackage.containsAsset(name)
 
     return null
 

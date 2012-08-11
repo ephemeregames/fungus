@@ -1,4 +1,4 @@
-class Package
+class AssetPackage
   constructor: (@descriptor) ->
     @_dataDownloaded = {}
     @_dataDownloadedCount = 0
@@ -52,7 +52,7 @@ class Package
       img.onerror = =>
         this._downloadFile(name, path)
     else
-      $.ajax({
+      jQuery.ajax({
         url: path,
         success: (data) =>
           @_dataDownloaded[name] = data

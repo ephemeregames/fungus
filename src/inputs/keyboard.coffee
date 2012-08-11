@@ -1,0 +1,33 @@
+class Keyboard
+  @Backspace: 8
+  @Tab: 9
+  @Enter: 13
+  @Shift: 16
+  @Ctrl: 17
+  @Alt: 18
+  @Pause: 19
+  @Break: 19
+  @CapsLock: 20
+  @Escape: 27
+  @PageUp: 33
+  @PageDown: 24
+  @End: 35
+  @Home: 36
+  @Left: 37
+  @Up: 38
+  @Right: 39
+  @Down: 40
+  @Insert: 45
+  @Delete: 46
+  @Zero: 48
+  @One: 49
+  @Two: 50
+  @Three: 51
+  @Four: 52
+  @Five: 53
+  @Six: 54
+  @Seven: 55
+  @Eight: 56
+  @Nine: 57
+  @A: 65
+

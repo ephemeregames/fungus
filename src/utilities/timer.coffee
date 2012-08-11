@@ -50,4 +50,8 @@ class @Timer
 
 
   fps: =>
-    (@target / @average) * @target
+    return (@target / @average) * @target
+
+
+  percentage: =>
+    return @target / @average
