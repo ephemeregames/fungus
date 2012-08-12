@@ -152,31 +152,33 @@ mergeAndCompile = (from, to, name) ->
 #==========================================================
 
 # Task: build
-build = ->
-  resetDirectory('bin/js')
+build = (output = 'bin/js') ->
+  resetDirectory(output)
 
-  execSync('coffee -c -o bin/js src')
+  execSync("coffee -c -o #{output} src")
 
 task 'build', 'Build project', -> build()
 
 
 # Task: watch
-task 'watch', 'Watch project for changes', ->
-  resetDirectory('bin/js')
+watch = (output = 'bin/js') ->
+  resetDirectory(output)
 
-  execSync('coffee -w -c -o bin/js src')
+  execSync("coffee -w -c -o #{output} src")
+
+task 'watch', 'Watch project for changes', -> watch()
 
 
 # Task: debug
-debug = ->
-  resetDirectory('bin/debug')
+debug = (output = 'bin/debug') ->
+  resetDirectory(output)
 
   # merge the files
-  execSync('coffee -j bin/debug/game.js -c src/*.coffee')
+  execSync("coffee -j #{output}/game.js -c src/*.coffee")
 
   # copy stuff
   # TODO merge everything from lib
-  copyAll('lib', 'bin/debug')
+  copyAll('lib', output)
 
 task 'debug', 'Build project in one file for debug', -> debug()
 
@@ -200,3 +202,14 @@ task 'start', 'Start the project', (options) ->
   p.on 'exit', (code) ->
     print "exit: #{code}"
 
+
+# Task: test the core of the game
+task 'test', 'Test the game', (options) ->
+  resetDirectory('tmp/tests')
+  build('tmp/tests')
+
+  # merge the test files
+  merge('tests', 'tmp/tests/tests.coffee')
+  compile('tmp/tests', 'tmp/tests', 'tests')
+  execSync('node tmp/tests/tests.js')
+  removeDirectory('tmp/tests')
