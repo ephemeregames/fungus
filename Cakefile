@@ -184,10 +184,11 @@ task 'new', 'Create a new game', (options) ->
 
 
 # Task: build
-task 'build', 'Build project', ->
-  resetDirectory('bin/js')
+build = (output = 'bin/js') ->
+  resetDirectory(output)
+  execSync("coffee -c -o #{output} src")
 
-  execSync('coffee -c -o bin/js src')
+task 'build', 'Build project', -> build()
 
 
 # Task: watch
@@ -198,16 +199,16 @@ task 'watch', 'Watch project for changes', ->
 
 
 # Task: debug
-debug = ->
-  resetDirectory('bin/debug')
+debug = (output = 'bin/debug') ->
+  resetDirectory(output)
 
   # merge and compile the src dir
-  merge('src', 'bin/debug/fungus.coffee')
-  mergeOne('src/interface.coffee', 'bin/debug/fungus.coffee')
-  compile('bin/debug', 'bin/debug', 'fungus')
+  merge('src', "#{output}/fungus.coffee")
+  mergeOne('src/interface.coffee', "#{output}/fungus.coffee")
+  compile(output, output, 'fungus')
 
   # copy stuff
-  copyAll('lib', 'bin/debug')
+  copyAll('lib', output)
   
 
 task 'debug', 'Build project in one file for debug', -> debug()
