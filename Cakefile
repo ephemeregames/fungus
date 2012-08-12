@@ -282,3 +282,14 @@ task 'show_example', 'Show an example', (options) ->
   p.on 'exit', (code) ->
     print "exit: #{code}"
 
+
+# Task: test the library
+task 'test', 'Test the library', (options) ->
+
+  build('tmp/tests')
+
+  # merge the test files
+  merge('tests', 'tmp/tests/tests.coffee')
+  compile('tmp/tests', 'tmp/tests', 'tests')
+  #execSync('coffee -w -c -o bin/js src')
+  #removeDirectory('tmp/tests')
