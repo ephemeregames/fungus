@@ -18,12 +18,14 @@ copy = (from, to) ->
 
 
 # Copy multiple files
-copyAll = (from, to) ->
+copyAll = (from, to, includes = '.*', excludes = null) ->
   throw 'DirectoryNotFound' unless fs.existsSync(from)
 
   files = fs.readdirSync(from)
 
   for f in files
+    continue unless f.match(includes)? and !f.match(excludes)?
+
     stats = fs.statSync("#{from}/#{f}")
 
     if stats.isDirectory()
@@ -106,8 +108,8 @@ getFilesSync = (from, includes, excludes, results) ->
 
 # Merge multiple files from a directory (recursive)
 # TODO remove 'interface' dependence
-merge = (from, to) ->
-  files = getFilesSync(from, 'coffee$', '^interface')
+merge = (from, to, includes = 'coffee$', excludes = '^interface') ->
+  files = getFilesSync(from, includes, excludes).sort()
 
   datas = new Array()
   
@@ -162,7 +164,7 @@ task 'new', 'Create a new game', (options) ->
     console.log('syntax: cake -p path/to/your/game new')
     return
 
-  debug()
+  release()
 
   # create the paths
   paths = [
@@ -180,7 +182,7 @@ task 'new', 'Create a new game', (options) ->
   copy('scaffolding/Cakefile', "#{options.path}/Cakefile")
   copy('scaffolding/src/game.coffee', "#{options.path}/src/game.coffee")
 
-  copyAll('bin/debug', "#{options.path}/lib")
+  copyAll('bin/release', "#{options.path}/lib")
   copyAll('node_modules', "#{options.path}/node_modules")
 
 
@@ -202,6 +204,7 @@ task 'watch', 'Watch project for changes', ->
 # Task: debug
 debug = (output = 'bin/debug') ->
   resetDirectory(output)
+  resetDirectory("#{output}/images")
 
   # merge and compile the src dir
   merge('src', "#{output}/fungus.coffee")
@@ -209,10 +212,37 @@ debug = (output = 'bin/debug') ->
   compile(output, output, 'fungus')
 
   # copy stuff
-  copyAll('lib', output)
+  copyAll('lib', output, '.js$')
+  copyAll('lib', output, '.css$')
+  copyAll('lib/images', "#{output}/images")
+  copy('lib/index_debug.html', "#{output}/index.html")
   
 
 task 'debug', 'Build project in one file for debug', -> debug()
+
+
+# Task: release
+release = (output = 'bin/release') ->
+  resetDirectory(output)
+  resetDirectory("#{output}/images")
+
+  # merge and compile
+  merge('src', "#{output}/fungus.coffee")
+  mergeOne('src/interface.coffee', "#{output}/fungus.coffee")
+  compile(output, output, 'fungus')
+
+  merge('lib', "#{output}/externals.js", '.js$')
+  mergeOne("#{output}/fungus.js", "#{output}/externals.js")
+
+  # minimize
+  execSync("cat #{output}/externals.js | uglifyjs -o #{output}/fungus.js")
+  fs.unlinkSync("#{output}/externals.js")
+
+  merge('lib', "#{output}/fungus.css", '.css$')
+  copy('lib/index_release.html', "#{output}/index.html")
+  copyAll('lib/images', "#{output}/images")
+
+task 'release', 'Build project in one file for release', -> release()
 
 
 # Task: build examples
@@ -250,12 +280,12 @@ task 'update', 'Update a game with this version of the library', (options) ->
     console.log('syntax: cake -p path/to/your/game update')
     return
 
-  debug()
+  release()
 
   resetDirectory("#{options.path}/lib")
   resetDirectory("#{options.path}/node_modules")
 
-  copyAll('bin/debug', "#{options.path}/lib")
+  copyAll('bin/release', "#{options.path}/lib")
   copyAll('node_modules', "#{options.path}/node_modules")
 
 
@@ -294,3 +324,4 @@ task 'test', 'Test the library', (options) ->
   compile('tmp/tests', 'tmp/tests', 'tests')
   execSync('node tmp/tests/tests.js')
   removeDirectory('tmp/tests')
+
