@@ -177,13 +177,12 @@ debug = (output = 'bin/debug') ->
   execSync("coffee -j #{output}/game.js -c src/*.coffee")
 
   # copy stuff
-  # TODO merge everything from lib
   copyAll('lib', output)
 
 task 'debug', 'Build project in one file for debug', -> debug()
 
 
-# Task: launch game
+# Task: launch project
 task 'start', 'Start the project', (options) ->
   debug()
 
@@ -203,9 +202,8 @@ task 'start', 'Start the project', (options) ->
     print "exit: #{code}"
 
 
-# Task: test the core of the game
-task 'test', 'Test the game', (options) ->
-  resetDirectory('tmp/tests')
+# Task: test the core of the project
+task 'test', 'Test the project', (options) ->
   build('tmp/tests')
 
   # merge the test files
