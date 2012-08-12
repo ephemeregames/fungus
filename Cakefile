@@ -242,6 +242,21 @@ examples = ->
 task 'examples', 'Build the examples', -> examples()
 
 
+# Task: update a game with the latest version of the library
+task 'update', 'Update a game with this version of the library', (options) ->
+  unless options.path?
+    console.log('syntax: cake -p path/to/your/game update')
+    return
+
+  debug()
+
+  resetDirectory("#{options.path}/lib")
+  resetDirectory("#{options.path}/node_modules")
+
+  copyAll('bin/debug', "#{options.path}/lib")
+  copyAll('node_modules', "#{options.path}/node_modules")
+
+
 # Task: launch an example
 task 'show_example', 'Show an example', (options) ->
   examples()
