@@ -169,6 +169,7 @@ task 'new', 'Create a new game', (options) ->
     '/lib',
     '/src',
     '/assets',
+    '/tests',
     '/node_modules'
   ].map (sub_path) -> options.path + sub_path
 
