@@ -291,5 +291,5 @@ task 'test', 'Test the library', (options) ->
   # merge the test files
   merge('tests', 'tmp/tests/tests.coffee')
   compile('tmp/tests', 'tmp/tests', 'tests')
-  #execSync('coffee -w -c -o bin/js src')
-  #removeDirectory('tmp/tests')
+  execSync('node tmp/tests/tests.js')
+  removeDirectory('tmp/tests')
