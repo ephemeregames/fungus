@@ -1,14 +1,7 @@
-class Vector3
-
-  @Zero    = Vector3.new(0.0, 0.0, 0.0)
-  @Side    = Vector3.new(-1.0, 0.0, 0.0)
-  @Up      = Vector3.new(0.0, 1.0, 0.0)
-  @Forward = Vector3.new(0.0, 0.0, 1.0)
-  @Unit    = Vector3.new(1.0, 1.0, 1.0)
-
+class @Vector3
 
   constructor: ->
-    switch arguments.size
+    switch arguments.length
       when 0
         @x = 0.0
         @y = 0.0
@@ -89,11 +82,11 @@ class Vector3
 
 
   scalarProduct: (other) =>
-    multiply(other)
+    this.multiply(other)
 
 
   scalarProductInPlace: (other) =>
-    multiplyInPlace(other)
+    this.multiplyInPlace(other)
 
 
   divide: (other) =>
@@ -121,15 +114,15 @@ class Vector3
 
 
   length: =>
-    Math.sqrt(lengthSquared())
+    Math.sqrt(this.lengthSquared())
 
 
   lengthSquared: =>
-    dot(self)
+    this.dot(this)
 
 
   normalize: =>
-    len = length()
+    len = this.length()
 
     return new Vector3(this) if len <= 0.0
 
@@ -137,7 +130,7 @@ class Vector3
 
 
   normalizeInPlace: =>
-    len = length()
+    len = this.length()
 
     return this if len <= 0.0
 
@@ -159,7 +152,7 @@ class Vector3
 
 
   set: =>
-    switch arguments.size
+    switch arguments.length
       when 1
         if arguments[0] instanceof Vector3
           @x = arguments[0].x
@@ -180,18 +173,18 @@ class Vector3
   equals: (other) =>
     if other instanceof Vector3
       return (
-        Math.abs(@x - @other.x) < 0.000000001 &&
-        Math.abs(@y - @other.y) < 0.000000001 &&
-        Math.abs(@z - @other.z) < 0.000000001
+        Math.abs(@x - other.x) < 0.000000001 &&
+        Math.abs(@y - other.y) < 0.000000001 &&
+        Math.abs(@z - other.z) < 0.000000001
       )
 
-    Math.abs(@x - @other) < 0.000000001 &&
-    Math.abs(@y - @other) < 0.000000001 &&
-    Math.abs(@z - @other) < 0.000000001
+    Math.abs(@x - other) < 0.000000001 &&
+    Math.abs(@y - other) < 0.000000001 &&
+    Math.abs(@z - other) < 0.000000001
 
 
   differs: (other) =>
-    !equals(other)
+    !this.equals(other)
 
 
   # Return component of vector parallel to a unit basis vector
@@ -431,3 +424,11 @@ class Vector3
   # Returns distance between @a a and @a b.
   @distance: (a, b) =>
     a.minus(b).length()
+
+
+  # Constants
+  @Zero:    => new Vector3(0.0, 0.0, 0.0)
+  @Side:    => new Vector3(-1.0, 0.0, 0.0)
+  @Up:      => new Vector3(0.0, 1.0, 0.0)
+  @Forward: => new Vector3(0.0, 0.0, 1.0)
+  @Unit:    => new Vector3(1.0, 1.0, 1.0)
