@@ -18,12 +18,14 @@ copy = (from, to) ->
 
 
 # Copy multiple files
-copyAll = (from, to) ->
+copyAll = (from, to, includes = '.*', excludes = null) ->
   throw 'DirectoryNotFound' unless fs.existsSync(from)
 
   files = fs.readdirSync(from)
 
   for f in files
+    continue unless f.match(includes)? and !f.match(excludes)?
+
     stats = fs.statSync("#{from}/#{f}")
 
     if stats.isDirectory()
@@ -106,8 +108,8 @@ getFilesSync = (from, includes, excludes, results) ->
 
 # Merge multiple files from a directory (recursive)
 # TODO remove 'interface' dependence
-merge = (from, to) ->
-  files = getFilesSync(from, 'coffee$', '^interface')
+merge = (from, to, includes = 'coffee$', excludes = '^interface') ->
+  files = getFilesSync(from, includes, excludes).sort()
 
   datas = new Array()
   
