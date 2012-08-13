@@ -275,6 +275,10 @@ class @Vector3
     "(#{@x},#{@y},#{@z})"
 
 
+  clone: =>
+    new Vector3(this)
+
+
   @cross: (a, b) =>
     new Vector3(
       a.y * b.z - a.z * b.y,
