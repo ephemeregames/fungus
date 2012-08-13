@@ -242,6 +242,11 @@ release = (output = 'bin/release') ->
   copy('lib/index_release.html', "#{output}/index.html")
   copyAll('lib/images', "#{output}/images")
 
+  # node.js version (build)
+  resetDirectory("#{output}/src")
+  build("#{output}/src")
+
+
 task 'release', 'Build project in one file for release', -> release()
 
 
@@ -316,7 +321,6 @@ task 'show_example', 'Show an example', (options) ->
 
 # Task: test the library
 task 'test', 'Test the library', (options) ->
-
   build('tmp/tests')
 
   # merge the test files
