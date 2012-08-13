@@ -136,6 +136,19 @@ compile = (from, to, name) ->
   fs.unlinkSync(path)
 
 
+# Compile all files from a directory
+compileAll = (from, to, merge = false, name = 'game.js') ->
+  if merge
+    execSync("coffee -j #{to}/#{name} -c #{from}/*.coffee")
+  else
+    execSync("coffee -c -o #{to} #{from}")
+
+
+# Watch all files from a directory and recompile when one is changed
+watchAll = (from, to) ->
+  execSync("coffee -c -o -w #{to} #{from}")
+
+
 # Merge and compile files from a directory (recursive)
 # Usage: mergeAndCompile('path/from', 'path/to', 'myscript')
 mergeAndCompile = (from, to, name) ->
@@ -189,16 +202,17 @@ task 'new', 'Create a new game', (options) ->
 # Task: build
 build = (output = 'bin/js') ->
   resetDirectory(output)
-  execSync("coffee -c -o #{output} src")
+  compileAll('src', output)
 
 task 'build', 'Build project', -> build()
 
 
 # Task: watch
-task 'watch', 'Watch project for changes', ->
-  resetDirectory('bin/js')
+watch = (output = 'bin/js') ->
+  resetDirectory(output)
+  watchAll('src', output)
 
-  execSync('coffee -w -c -o bin/js src')
+task 'watch', 'Watch project for changes', -> watch()
 
 
 # Task: debug

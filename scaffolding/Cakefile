@@ -156,8 +156,7 @@ mergeAndCompile = (from, to, name) ->
 # Task: build
 build = (output = 'bin/js') ->
   resetDirectory(output)
-
-  execSync("coffee -c -o #{output} src")
+  compileAll('src', output)
 
 task 'build', 'Build project', -> build()
 
@@ -165,8 +164,7 @@ task 'build', 'Build project', -> build()
 # Task: watch
 watch = (output = 'bin/js') ->
   resetDirectory(output)
-
-  execSync("coffee -w -c -o #{output} src")
+  watchAll('src', output)
 
 task 'watch', 'Watch project for changes', -> watch()
 
@@ -174,14 +172,22 @@ task 'watch', 'Watch project for changes', -> watch()
 # Task: debug
 debug = (output = 'bin/debug') ->
   resetDirectory(output)
-
-  # merge the files
-  execSync("coffee -j #{output}/game.js -c src/*.coffee")
-
-  # copy stuff
+  compileAll('src', output, true, 'game.js')
   copyAll('lib', output)
 
 task 'debug', 'Build project in one file for debug', -> debug()
+
+
+# Task: release
+release = (output = 'bin/release') ->
+  resetDirectory(output)
+  compileAll('src', output, true, 'game.js')
+  copyAll('lib', output)
+
+  # minimize
+  execSync("cat #{output}/game.js | uglifyjs -o #{output}/game.js")
+
+task 'release', 'Build project in one file for release', -> release()
 
 
 # Task: launch project
@@ -207,9 +213,10 @@ task 'start', 'Start the project', (options) ->
 # Task: test the core of the project
 task 'test', 'Test the project', (options) ->
   build('tmp/tests')
+  copyAll('lib/src', 'tmp/tests')
 
   # merge the test files
-  merge('tests', 'tmp/tests/tests.coffee')
-  compile('tmp/tests', 'tmp/tests', 'tests')
+  compileAll('tests', 'tmp/tests', true, 'tests.js')
   execSync('node tmp/tests/tests.js')
   removeDirectory('tmp/tests')
+
