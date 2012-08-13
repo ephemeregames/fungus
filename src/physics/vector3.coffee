@@ -155,17 +155,17 @@ class @Vector3
     switch arguments.length
       when 1
         if arguments[0] instanceof Vector3
-          @x = arguments[0].x
-          @y = arguments[0].y
-          @z = arguments[0].z
+          @x = arguments[0].x * 1.0
+          @y = arguments[0].y * 1.0
+          @z = arguments[0].z * 1.0
         else
-          @x = arguments[0]
-          @y = arguments[0]
-          @z = arguments[0]
+          @x = arguments[0] * 1.0
+          @y = arguments[0] * 1.0
+          @z = arguments[0] * 1.0
       when 3
-        @x = arguments[0]
-        @y = arguments[1]
-        @z = arguments[2]
+        @x = arguments[0] * 1.0
+        @y = arguments[1] * 1.0
+        @z = arguments[2] * 1.0
 
     this
 
