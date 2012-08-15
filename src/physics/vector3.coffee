@@ -1,19 +1,11 @@
 class @Vector3
 
   constructor: ->
-    switch arguments.length
-      when 0
-        @x = 0.0
-        @y = 0.0
-        @z = 0.0
-      when 1
-        @x = arguments[0].x * 1.0 # ensure float
-        @y = arguments[0].y * 1.0
-        @z = arguments[0].z * 1.0
-      when 3
-        @x = arguments[0] * 1.0
-        @y = arguments[1] * 1.0
-        @z = arguments[2] * 1.0
+    @x = 0
+    @y = 0
+    @z = 0
+
+    this.set.apply(this, arguments)
 
 
   plus: (other) =>
