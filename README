@@ -1,0 +1,8 @@
+= Fungus
+
+
+= To do
+. Build file to ensure right order when compiling or find a smarter way to do it
+. Web-based unit test framework so we can test the game with the whole stack (i.e. JQuery)
+. Web-based editor so we can build the game and see the results live (that would be awesome but so much work)
+
