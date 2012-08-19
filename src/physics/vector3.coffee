@@ -43,6 +43,14 @@ class @Vector3
     this
 
 
+  substract: (other) =>
+    this.minus(other)
+
+
+  substractInPlace: (other) =>
+    this.minusInPlace(other)
+
+
   unaryMinus: =>
     new Vector3(-@x, -@y, -@z)
 
