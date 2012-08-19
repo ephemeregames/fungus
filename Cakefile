@@ -139,9 +139,9 @@ compile = (from, to, name) ->
 # Compile all files from a directory
 compileAll = (from, to, merge = false, name = 'game.js') ->
   if merge
-    execSync("coffee -j #{to}/#{name} -c #{from}/*.coffee")
+    execSync("coffee -l -j #{to}/#{name} -c #{from}")
   else
-    execSync("coffee -c -o #{to} #{from}")
+    execSync("coffee -l -c -o #{to} #{from}")
 
 
 # Watch all files from a directory and recompile when one is changed
