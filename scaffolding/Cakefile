@@ -90,19 +90,19 @@ resetDirectory = (path) ->
 
 # Get a list of files paths from a directory (recursive)
 # Usage: getFilesSync('path/to/folder', 'coffee$', '^interface')
-getFilesSync = (from, includes, excludes, results) ->
+getFilesSync = (from, includes = null, excludes = null, results = null) ->
   throw 'DirectoryNotFound' unless fs.existsSync(from)
   
   results ?= new Array
   
   files = fs.readdirSync(from)
-  
+
   for name in files
     path = "#{from}/#{name}"
     stats = fs.statSync(path)
-    results.push(path) if stats.isFile() and name.match(includes)? and !name.match(excludes)?
+    results.push(path) if stats.isFile() and (includes == null || name.match(includes)?) and (excludes == null || !name.match(excludes)?)
     getFilesSync(path, includes, excludes, results) if stats.isDirectory()
-  
+
   return results
 
 
@@ -136,6 +136,22 @@ compile = (from, to, name) ->
   fs.unlinkSync(path)
 
 
+# Compile all files from a directory
+compileAll = (from, to, merge = false, ordered = true, name = 'game.js') ->
+
+  files = if ordered && merge then files_to_compile(from).join(' ') else from
+
+  if merge
+    execSync("coffee -l -j #{to}/#{name} -c #{files}")
+  else
+    execSync("coffee -l -o #{to} -c #{files}")
+
+
+# Watch all files from a directory and recompile when one is changed
+watchAll = (from, to) ->
+  execSync("coffee -c -o -w #{to} #{from}")
+
+
 # Merge and compile files from a directory (recursive)
 # Usage: mergeAndCompile('path/from', 'path/to', 'myscript')
 mergeAndCompile = (from, to, name) ->
@@ -149,9 +165,67 @@ mergeAndCompile = (from, to, name) ->
   fs.unlink path
 
 
+# Produce an ordered list of files to compile by analyzing
+# their dependencies
+files_to_compile = (from) ->
+
+  # Gather all files from a directory
+  files = getFilesSync(from, 'coffee$')
+
+  # Read each file and get the list of require declarations
+  # Store the results in a hash where:
+  # - key == filename
+  # - value == array dependencies
+  files_and_dependencies = { }
+
+  for f in files
+
+    key = f.replace("#{from}/", '').replace('.coffee', '')
+    files_and_dependencies[key] = []
+
+    content = fs.readFileSync(f, 'utf8')
+    require_declarations = content.match(/\s*#\s*require.+/g) || []
+
+    for declaration in require_declarations
+      files_and_dependencies[key].push(declaration.split(/\s*#\s*require\s+/g)[1])
+
+
+  # Cycle through files and build the sorted list of files
+  # If we cannot clear the list of files and dependencies, there is
+  # a problem (i.e. circular dependency) and we throw an error.
+  results = []
+
+  for file, dependencies of files_and_dependencies
+    # if the file has no dependencies, we put it in front of the list
+    if dependencies.length == 0
+      results.unshift(file) if results.indexOf(file) == -1
+      continue
+
+    # if the dependency doesn't exist, we put it in front of the list
+    for d in dependencies
+      results.unshift(d) if results.indexOf(d) == -1
+
+    # we remove the file from the list if it exists
+    current_index = results.indexOf(file)
+    removed = results.splice(current_index, 1) if current_index != -1
+
+    # we find the greater index of the dependencies and put the file after that position
+    indexes = dependencies.map (d) -> results.indexOf(d)
+    index = indexes.reduce (d1, d2) -> Math.max(d1, d2)
+
+    results.splice(index + 1, 0, file)
+
+  results.map (f) -> "#{from}/#{f}.coffee"
+
+
 #==========================================================
 # Tasks
 #==========================================================
+
+# Options
+
+option '-p', '--port [port]', "port for the local server (command 'start' only)"
+
 
 # Task: build
 build = (output = 'bin/js') ->
@@ -172,7 +246,7 @@ task 'watch', 'Watch project for changes', -> watch()
 # Task: debug
 debug = (output = 'bin/debug') ->
   resetDirectory(output)
-  compileAll('src', output, true, 'game.js')
+  compileAll('src', output, true)
   copyAll('lib', output)
 
 task 'debug', 'Build project in one file for debug', -> debug()
@@ -181,7 +255,7 @@ task 'debug', 'Build project in one file for debug', -> debug()
 # Task: release
 release = (output = 'bin/release') ->
   resetDirectory(output)
-  compileAll('src', output, true, 'game.js')
+  compileAll('src', output, true)
   copyAll('lib', output)
 
   # minimize
@@ -194,7 +268,12 @@ task 'release', 'Build project in one file for release', -> release()
 task 'start', 'Start the project', (options) ->
   debug()
 
-  p = spawn 'python', ['-m', 'SimpleHTTPServer'], {
+  port = options.port ? 8000
+
+  console.log("Starting HTTP server...")
+  console.log("Go to http://localhost:#{port}/debug to play your game.")
+
+  p = spawn 'python', ['-m', 'SimpleHTTPServer', port], {
     cwd: "#{process.cwd()}/bin",
     env: process.env,
     customFds: [-1, -1, -1]
@@ -216,7 +295,6 @@ task 'test', 'Test the project', (options) ->
   copyAll('lib/src', 'tmp/tests')
 
   # merge the test files
-  compileAll('tests', 'tmp/tests', true, 'tests.js')
+  compileAll('tests', 'tmp/tests', true, true, 'tests.js')
   execSync('node tmp/tests/tests.js')
   removeDirectory('tmp/tests')
-
