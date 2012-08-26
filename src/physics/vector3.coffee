@@ -198,14 +198,14 @@ class @Vector3
   # Return component of vector parallel to a unit basis vector
   # (IMPORTANT NOTE: assumes "basis" has unit magnitude (length == 1))
   parallelComponent: (unitBasis) =>
-    projection = dot(unitBasis)
+    projection = this.dot(unitBasis)
     unitBasis.scalarProduct(projection)
 
 
   # Return component of vector perpendicular to a unit basis vector
   # (IMPORTANT NOTE: assumes "basis" has unit magnitude (length == 1))
   perpendicularComponent: (unitBasis) =>
-    this.minus(parallelComponent(unitBasis))
+    this.minus(this.parallelComponent(unitBasis))
 
 
   # Clamps the length of a given vector to maxLength. If the vector is
