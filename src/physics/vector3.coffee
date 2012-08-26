@@ -272,7 +272,7 @@ class @Vector3
 
 
   toString: =>
-    "(#{@x},#{@y},#{@z})"
+    "(#{@x.toFixed(2)},#{@y.toFixed(2)},#{@z.toFixed(2)})"
 
 
   clone: =>
