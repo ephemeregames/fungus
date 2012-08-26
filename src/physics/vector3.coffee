@@ -26,6 +26,14 @@ class @Vector3
     this
 
 
+  add: (other) =>
+    this.plus(other)
+
+
+  addInPlace: (other) =>
+    this.plusInPlace(other)
+
+
   minus: (other) =>
     return new Vector3(@x - other.x, @y - other.y, @z - other.z) if other instanceof Vector3
     new Vector3(@x - other, @y - other, @z - other)
